@@ -189,7 +189,7 @@ export const deleteProfileImage = async( req, res, next ) => {
 
 export const logout = async(req, res, next) => {
     try {
-        res.cookie("jwt","", {maxAge:1, });
+        res.cookie("jwt","", {secure:true, sameSite: "None" });
         return res.status(200).send("Logout successfull.");
     } catch (error) {
         return res.status(500).send("Internal Server Error while logout.")
