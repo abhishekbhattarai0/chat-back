@@ -23,8 +23,6 @@ export const signup = async( req, res, next) => {
         user = await User.create({email,password});
         res.cookie("jwt",createToken(email,user.id), {
             maxAge,
-            secure: true,
-            sameSite: "None"
         });
 
 
@@ -57,8 +55,6 @@ export const login = async( req, res, next) => {
 
         res.cookie("jwt", createToken(email, user.id),{
             maxAge,
-            secure: true,
-            sameSite: "None"
         });
         return res.status(200).json({
             user: {
@@ -190,7 +186,7 @@ export const deleteProfileImage = async( req, res, next ) => {
 
 export const logout = async(req, res, next) => {
     try {
-        res.cookie("jwt","", {maxAge:1, secure:true, sameSite: "None"});
+        res.cookie("jwt","", {maxAge:1, });
         return res.status(200).send("Logout successfull.");
     } catch (error) {
         return res.status(500).send("Internal Server Error while logout.")
