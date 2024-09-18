@@ -41,7 +41,7 @@ const deleteFromCloudinary = async(filePath) => {
 
         return response;
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while deleting file")
+        console.log( "Error while deleting:",error)
     }
 
 }
