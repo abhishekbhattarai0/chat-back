@@ -7,7 +7,6 @@ export const createChannel = async (req, res, next) => {
     try {
         const { name, members } = req.body;
         const userId = req.userId;
-        console.log("name and members",name, members)
 
         const admin = await User.findById(userId);
 
@@ -30,7 +29,6 @@ export const createChannel = async (req, res, next) => {
         await newChannel.save();
         return res.status(201).json({ channel: newChannel})
     } catch (error) {
-        console.log({error});
         return res.status(500).send("Internal Server Error");
     }
 }
@@ -44,7 +42,6 @@ export const getUserChannels = async ( req, res, next) => {
 
         return res.status(201).json({channels})
     } catch (error) {
-        console.log({error})
         return res.status(500).send("Internal Server Error while getting user channels.");
     }
 }
@@ -66,7 +63,6 @@ export const getChannelMessages = async (req, res, next) => {
 
         return res.status(201).json({ messages });
     } catch (error) {
-        console.log({error});
         return res.status(500).send("Internal server error while getting channel messages.")
     }
 }

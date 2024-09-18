@@ -81,16 +81,16 @@ const setupSocket = ( server ) => {
 
         if(userId){
             userSocketMap.set(userId, socket.id);
-            console.log(`User connected  userId : ${userId} with socket id ${socket.id}`);
+            (`User connected  userId : ${userId} with socket id ${socket.id}`);
         } else {
-            console.log("User id not provided during connection.");
+            ("User id not provided during connection.");
         }
 
 
         socket.on("sendMessage", sendMessage)
         socket.on("send-channel-message", sendChannelMessage);
         socket.on("disconnect", (socket)=> {
-            console.log(`User : ${userId} disconnected ...`);
+            (`User : ${userId} disconnected ...`);
             for ( const [userId, socketId] of userSocketMap.entries()){
                 userSocketMap.delete(userId);
                 break;

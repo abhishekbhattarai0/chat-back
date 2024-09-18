@@ -21,32 +21,26 @@ export const getMessages = async (req, res, next) => {
 
 
     } catch (error) {
-        console.log({error});
         return res.status(500).send("Something went wrong while getting all the messages");
     }
 }
 
 export const uploadFile = async( req, res, next) => {
     try {
-        console.log("inside uploadFIle")
         if(!req.file){
             return res.status(400).send("File is required.")
         }
-        console.log("File::",req.file)
         const date = Date.now();
         let fileDir = `uploads/files/${date}`;
         let fileName = `${fileDir}/${req.file.originalname}`;
 
         mkdirSync(fileDir, { recursive: true});
-        console.log("after")
-        console.log("filePath:", req.file.path)
         const rees = renameSync(req.file.path, fileName)
 
 
 
         return res.status(200).json({filePath: fileName})
     } catch (error) {
-        console.log("error :;",error)
         return res.status(500).send("Internal Server Error while uploading file")
     }
 }

@@ -1,5 +1,5 @@
 import express from 'express'
-import dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
@@ -9,7 +9,8 @@ import setupSocket from './socket.js'
 import messageRoutes from './routes/MessageRoute.js'
 import channelRoutes from './routes/ChannelRoute.js'
 
-dotenv.config();
+import { configDotenv } from 'dotenv';
+configDotenv()
 
 const app = express()
 const port = process.env.PORT || 4000

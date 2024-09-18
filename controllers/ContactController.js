@@ -5,7 +5,6 @@ import Message from "../models/MessageModel.js";
 
 export const searchContacts = async (req, res, next) => {
     try {
-        console.log("working")
         const { searchTerm } = req.body;
 
         if(searchTerm === undefined || searchTerm === null) {
@@ -25,11 +24,10 @@ export const searchContacts = async (req, res, next) => {
                     $or: [{ firstName: regex}, { lastName: regex }, { email: regex}],
                 },
             ],
-        },"firstName lastName email");
+        },"firstName lastName email image");
 
         return res.status(200).json({contacts});
     } catch (error) {
-        console.log(error)
         return res.status(500).send("Internal server error while searching contacts.")
     }
 }
@@ -109,7 +107,6 @@ export const getAllContacts = async (req, res, next) => {
 
         return res.status(200).json({ contacts });
     } catch (error) {
-        console.log({error});
         return res.status(500).send("Internal Server Error while getting all contacts");
     }
 }
