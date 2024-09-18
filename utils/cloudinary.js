@@ -31,7 +31,9 @@ const uploadOnCloudinary = async (localFilePath) => {
 
 const deleteFromCloudinary = async(filePath) => {
     try {
-        console.log("File path from delete", filePath)
+        if (!filePath) {
+            return null;
+        }
         const publicId = filePath.split("/")[7].split(".")[0]
 
         if(!publicId) return null;

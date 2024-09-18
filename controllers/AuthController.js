@@ -163,6 +163,7 @@ export const addProfileImage = async (req, res) => {
 
         return res.status(200).json({ image: updatedUser.image });
     } catch (error) {
+        console.error(error)
         return res.status(500).send("Internal Server Error occurred while adding profile.");
     }
 };
@@ -196,7 +197,7 @@ export const deleteProfileImage = async( req, res, next ) => {
          return res.status(200).send("Profile image deleted successfully");
         }
 
-        throw Error("Image doesnot exist");
+        return res.status(404).send("Image doesnot exist");
 
     } catch (error) {
         return res.status(500).send("Internal Server Error while deleting the Profile image.")
