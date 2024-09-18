@@ -179,7 +179,7 @@ export const deleteProfileImage = async( req, res, next ) => {
             return res.status(404).send("User not found.");
         }
 
-        const response = deleteFromCloudinary(user?.image);
+        const response = await deleteFromCloudinary(user?.image);
         // if(user.image){
         //     fs.unlink(user.image, (err)=> {
         //         if (err) {
@@ -190,7 +190,6 @@ export const deleteProfileImage = async( req, res, next ) => {
         //         }
         //     })
         // }
-        console.log("respose after delete request ", response)
        if (response) {
          user.image = null;
          await user.save();

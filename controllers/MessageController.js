@@ -1,5 +1,6 @@
 import Message from "../models/MessageModel.js"
 import {mkdirSync, renameSync} from 'fs'
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const getMessages = async (req, res, next) => {
     try {
@@ -27,19 +28,20 @@ export const getMessages = async (req, res, next) => {
 
 export const uploadFile = async( req, res, next) => {
     try {
-        if(!req.file){
+        const localFilePath = req.file.path;
+        if(!localFilePath){
             return res.status(400).send("File is required.")
         }
-        const date = Date.now();
-        let fileDir = `uploads/files/${date}`;
-        let fileName = `${fileDir}/${req.file.originalname}`;
 
-        mkdirSync(fileDir, { recursive: true});
-        const rees = renameSync(req.file.path, fileName)
+        const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
+
+        if(!cloudinaryResponse.secure_url){
+            return res.status(401).send("file cannot be uploaded .")
+        }
 
 
 
-        return res.status(200).json({filePath: fileName})
+        return res.status(200).json({filePath: cloudinaryResponse.secure_url})
     } catch (error) {
         return res.status(500).send("Internal Server Error while uploading file")
     }
