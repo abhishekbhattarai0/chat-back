@@ -1,7 +1,6 @@
 import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
 import bycrypt from "bcrypt";
-import fs from 'fs'
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const maxAge = 3 *24 *60 *60 *1000;
@@ -47,7 +46,7 @@ export const login = async( req, res, next) => {
         }
         const user = await User.findOne({ email });
         if(!user){
-            res.status(404).send("User with the given email and password not found.");
+            return res.status(404).send("User with the given email and password not found.");
         }
         const auth = await bycrypt.compare(password, user.password);
         if(!auth){
@@ -72,6 +71,7 @@ export const login = async( req, res, next) => {
             }
         })
     } catch (error) {
+        console.log("login error:",error)
         return res.status(500).send("Internal Server Error.")
     }
 }
