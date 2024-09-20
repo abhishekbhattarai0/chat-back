@@ -11,13 +11,13 @@ export const createChannel = async (req, res, next) => {
         const admin = await User.findById(userId);
 
         if(!admin){
-            return Response.status(400).send("Admin user not found");
+            throw new ApiError(404, "Admin user not found");
         }
 
         const validMembers = await User.find({ _id: { $in: members }});
 
         if( validMembers.length !== members.length){
-            return res.status(400).send("Some members are not valid users");
+            throw new ApiError(401, "InternalSome members are not valid users");
         }
 
         const newChannel = new Channel({
@@ -29,7 +29,7 @@ export const createChannel = async (req, res, next) => {
         await newChannel.save();
         return res.status(201).json({ channel: newChannel})
     } catch (error) {
-        return res.status(500).send("Internal Server Error");
+        throw new ApiError(500, "Internal Server Error while creating channel.");
     }
 }
 
@@ -42,7 +42,7 @@ export const getUserChannels = async ( req, res, next) => {
 
         return res.status(201).json({channels})
     } catch (error) {
-        return res.status(500).send("Internal Server Error while getting user channels.");
+        throw new ApiError(500, "Internal Server Error while getting user channels.");
     }
 }
 
@@ -57,12 +57,12 @@ export const getChannelMessages = async (req, res, next) => {
             }
         });
         if(!channel) {
-            return res.status(404).send("Channel not found.");
+        throw new ApiError(404, "Channel not found.");
         }
         const messages = channel.messages;
 
-        return res.status(201).json({ messages });
+        return res.status(200).json({ messages });
     } catch (error) {
-        return res.status(500).send("Internal server error while getting channel messages.")
+        throw new ApiError(500, "Internal server error while getting channel messages.");
     }
 }

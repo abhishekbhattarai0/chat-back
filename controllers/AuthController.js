@@ -2,6 +2,7 @@ import User from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
 import bycrypt from "bcrypt";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const maxAge = 3 *24 *60 *60 *1000;
 
@@ -13,12 +14,12 @@ export const signup = async( req, res, next) => {
     try {
         const {email, password} = req.body;
         if(!email || !password){
-            return res.status(400).send("Email and password is required.")
+            throw new ApiError(400, "Email and Password is required .");
         }
 
         let user = await User.findOne({email:email})
         if(user){
-            return res.status(502).send({message: "User with email alredy exists"})
+            throw new ApiError(400, "User with email alredy exists.");
         }
         user = await User.create({email,password});
         res.cookie("jwt",createToken(email,user.id), {
@@ -34,7 +35,8 @@ export const signup = async( req, res, next) => {
             }
         })
     } catch (error) {
-        return res.status(500).send("Internal Server Error.")
+        throw new ApiError(400, "Internal Server Error while signup.");
+        
     }
 }
 
@@ -46,11 +48,11 @@ export const login = async( req, res, next) => {
         }
         const user = await User.findOne({ email });
         if(!user){
-            return res.status(404).send("User with the given email and password not found.");
+            throw new ApiError(400, "User with the given email and password not found.")
         }
         const auth = await bycrypt.compare(password, user.password);
         if(!auth){
-            return res.status(400).send("Password is incorrect.");
+            throw new ApiError(400, "Password is incorrect.")
         }
 
         res.cookie("jwt", createToken(email, user.id),{
@@ -83,7 +85,7 @@ export const getUserInfo = async (req, res, next) => {
 
         
         if(!userData){
-            return res.status(404).send("User with the given Id not found.")
+            throw new ApiError(404, "User with the given Id not found.")
         }
         return res.status(200).json({
                 id: userData.id,
@@ -95,7 +97,7 @@ export const getUserInfo = async (req, res, next) => {
                 color: userData.color,
         })
     } catch (error) {
-        return res.status(500).send("Internal Server Error.")
+            throw new ApiError(404, "Internal server error while getting users.")
     }
 }
 
@@ -104,7 +106,7 @@ export const updateProfile = async( req, res, next) => {
         const {userId} = req;
         const {firstName, lastName, color} = req.body;
         if(!firstName || !lastName ){
-            return res.status(400).send("firstname, lastname and color are required.")
+            throw new ApiError(404, "firstname, lastname and color are required.")
         }
         const userData = await  User.findByIdAndUpdate(
         userId,
@@ -127,7 +129,7 @@ export const updateProfile = async( req, res, next) => {
             color: userData.color,
     })
     } catch (error) {
-        return res.status(500).send("Internal Server Error occured while updating profile")
+            throw new ApiError(500, "Internal Server Error occured while updating profile.")
     }
 }
 
@@ -136,7 +138,7 @@ export const updateProfile = async( req, res, next) => {
 export const addProfileImage = async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).send("Image is required.");
+            throw new ApiError(400, "Image is required.")
         }
 
         // Define file paths
@@ -149,7 +151,7 @@ export const addProfileImage = async (req, res) => {
 
 
         if (!cloudinaryResponse || !cloudinaryResponse.secure_url) {
-            throw new Error("Cloudinary upload response missing secure_url.");
+            throw new ApiError(400, "Cloudinary upload response missing secure_url.")
         }
 
         // Update the user's profile image with the Cloudinary URL
@@ -164,7 +166,7 @@ export const addProfileImage = async (req, res) => {
         return res.status(200).json({ image: updatedUser.image });
     } catch (error) {
         console.error(error)
-        return res.status(500).send("Internal Server Error occurred while adding profile.");
+        throw new ApiError(500, "Internal Server Error occurred while adding profile.")
     }
 };
 
@@ -176,12 +178,11 @@ export const deleteProfileImage = async( req, res, next ) => {
         const { userId } = req;
         const user = await User.findById(userId);
         if(!user) {
-            return res.status(404).send("User not found.");
+            throw new ApiError(404, "User not found.")
         }
 
         const response = await deleteFromCloudinary(user?.image);
-        // if(user.image){
-        //     fs.unlink(user.image, (err)=> {
+        // if(user.image){ //     fs.unlink(user.image, (err)=> {
         //         if (err) {
         //             return res.status(500).json({
         //                 message: "Something went wrong while deleting the image",
@@ -194,12 +195,13 @@ export const deleteProfileImage = async( req, res, next ) => {
          user.image = null;
          await user.save();
          return res.status(200).send("Profile image deleted successfully");
+
         }
 
-        return res.status(404).send("Image doesnot exist");
+        throw new ApiError(404, "Image doesnot exist.")
 
     } catch (error) {
-        return res.status(500).send("Internal Server Error while deleting the Profile image.")
+        throw new ApiError(500, "Internal Server Error while deleting the Profile image..")
     }
 }
 
@@ -208,6 +210,6 @@ export const logout = async(req, res, next) => {
         res.cookie("jwt","", {secure:true, sameSite: "None" });
         return res.status(200).send("Logout successfull.");
     } catch (error) {
-        return res.status(500).send("Internal Server Error while logout.")
+        throw new ApiError(404, "Internal Server Error while logout.")
     }
 }

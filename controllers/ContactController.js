@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 import User from "../models/UserModel.js";
 import Message from "../models/MessageModel.js";
+import {ApiError} from "../utils/ApiError.js"
 
 
 export const searchContacts = async (req, res, next) => {
     try {
         const { searchTerm } = req.body;
+        console.log("searchTerm",searchTerm)
 
         if(searchTerm === undefined || searchTerm === null) {
-            return res.status(400).send("Search Term is required.");
+            throw new ApiError(400, "Search Term is required.");
         }
 
         const sanitizedSearchTerm = searchTerm.replace(
@@ -28,7 +30,7 @@ export const searchContacts = async (req, res, next) => {
 
         return res.status(200).json({contacts});
     } catch (error) {
-        return res.status(500).send("Internal server error while searching contacts.")
+        throw new ApiError(500, "Internal server error while searching contacts.");
     }
 }
 
@@ -89,7 +91,7 @@ export const getContactsForDmList = async(req, res, next ) => {
 
         return res.status(200).json({ contacts});
     } catch (error) {
-        return res.status(500).send("Internal Server Error while getting dm list.");
+            throw new ApiError(500, "Internal Server Error while getting dm list.");
     }
 }
 
@@ -107,6 +109,6 @@ export const getAllContacts = async (req, res, next) => {
 
         return res.status(200).json({ contacts });
     } catch (error) {
-        return res.status(500).send("Internal Server Error while getting all contacts");
+            throw new ApiError(500, "Internal Server Error while getting all contacts.");
     }
 }

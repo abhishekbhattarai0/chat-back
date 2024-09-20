@@ -8,7 +8,7 @@ export const getMessages = async (req, res, next) => {
         const user2 = req.body.id;
 
         if ( !user1 || !user2) {
-            return res.status(400).send("Both user id are required.");
+            throw new ApiError(400, "Both user id are required..");
         }
 
         const messages = await Message.find({
@@ -22,7 +22,7 @@ export const getMessages = async (req, res, next) => {
 
 
     } catch (error) {
-        return res.status(500).send("Something went wrong while getting all the messages");
+            throw new ApiError(500, "Something went wrong while getting all the messages.");
     }
 }
 
@@ -30,19 +30,19 @@ export const uploadFile = async( req, res, next) => {
     try {
         const localFilePath = req.file.path;
         if(!localFilePath){
-            return res.status(400).send("File is required.")
+            throw new ApiError(400, "File is required.");
         }
 
         const cloudinaryResponse = await uploadOnCloudinary(localFilePath);
 
         if(!cloudinaryResponse.secure_url){
-            return res.status(401).send("file cannot be uploaded .")
+            throw new ApiError(400, "file cannot be uploaded .");
         }
 
 
 
         return res.status(200).json({filePath: cloudinaryResponse.secure_url})
     } catch (error) {
-        return res.status(500).send("Internal Server Error while uploading file")
+            throw new ApiError(400, "Internal Server Error while uploading file.");
     }
 }
