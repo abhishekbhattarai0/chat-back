@@ -7,7 +7,6 @@ import {ApiError} from "../utils/ApiError.js"
 export const searchContacts = async (req, res, next) => {
     try {
         const { searchTerm } = req.body;
-        console.log("searchTerm",searchTerm)
 
         if(searchTerm === undefined || searchTerm === null) {
             throw new ApiError(400, "Search Term is required.");
